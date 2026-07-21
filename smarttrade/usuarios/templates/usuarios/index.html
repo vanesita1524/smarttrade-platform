@@ -1,0 +1,246 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bolsa Hoy</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+        crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body class="bg-light">
+
+  <nav class="navbar navbar-expand-md bg-white shadow-sm">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fw-bold" href="#">ST</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-between" id="navbarContent">
+        <form class="d-none d-md-flex w-50 mx-auto">
+          <input type="text" class="form-control" placeholder="Buscar...">
+        </form>
+
+        <ul class="navbar-nav ms-auto flex-row gap-3 align-items-center">
+          
+          <li class="nav-item d-md-none">
+            <i id="btnLupa" class="bi bi-search" style="cursor:pointer; font-size:1.5rem;"></i>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link" href="#" id="configDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 0.5rem 0.5rem;">
+              <i class="bi bi-gear" style="font-size:1.4rem; cursor:pointer;"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="configDropdown">
+              
+              <li class="dropdown-header fw-bold text-center">Perfil de Usuario</li>
+              <li class="px-3">
+                
+                <p class="mb-1 small"><b>Nombre:</b> 
+                    {% if user.first_name or user.last_name %}
+                        {{ user.first_name }} {{ user.last_name }}
+                    {% else %}
+                        {{ user.username }}
+                    {% endif %}
+                </p>
+
+                <p class="mb-1 small"><b>Correo:</b> {{ user.email }}</p>
+                <p class="mb-1 small"><b>Plan:</b> <span class="badge bg-primary">{% if user.perfil and user.perfil.plan %}{{ user.perfil.plan.nombre }}{% else %}Gratis{% endif %}</span></p>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              
+              <li><a class="dropdown-item" href="{% url 'cambiar_plan' %}"> Cambiar plan</a></li>
+              <li><a class="dropdown-item" href="{% url 'cambiar_correo' %}"> Cambiar correo</a></li>
+              
+              <li><hr class="dropdown-divider"></li>
+              <li><button class="dropdown-item" id="toggleDarkMode">Modo oscuro/claro</button></li>
+              <li><button class="dropdown-item" id="increaseFont">Aumentar letra</button></li>
+              <li><button class="dropdown-item" id="decreaseFont">Disminuir letra</button></li>
+              
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Cerrar sesión</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item"><a class="nav-link" href="{% url 'pqrs' %}">PQRS</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container-fluid d-md-none mt-2 px-4">
+    <input type="text" class="form-control" placeholder="Buscar...">
+  </div>
+
+  <main class="container-fluid mt-4">
+    <!-- Título principal -->
+    <div class="text-center">
+      <h2>¿CÓMO ESTÁ LA BOLSA HOY?</h2>
+      <small>Si quiere reportes mas especificos consulte los <a href="{% url 'planes' %}">planes disponibles</a></small>
+    </div>
+
+    <!-- Imagen -->
+    <div class="text-center mt-3">
+      <img src="{% static 'img/ecopetrol_history.png' %}" alt="Histórico de Precios Ecopetrol" class="img-fluid">
+    </div>
+
+    <!-- Predicción -->
+    <div class="text-center mt-4">
+      <h3>PREDICCIÓN PRÓXIMA SEMANA</h3>
+      <small>Recuerda que son precios aproximados con base en un algoritmo, no afirmamos que sean exactos</small>
+    </div>
+
+    <div class="text-center mt-3">
+      <button class="btn btn-primary">PRECIO SIGUIENTE DÍA 💹💲 {{ pred_next_day }}</button>
+    </div>
+    <div class="text-center mt-2">
+      <button class="btn btn-primary">PRECIO 8 DÍAS DESPUÉS 💹💲 {{ pred_next_week }}</button>
+    </div>
+
+    <!-- Chat -->
+    <div class="text-center mt-3">
+      <a href="{% url 'room' %}" class="me-3">Chat con un asesor</a>
+      <a href="{% url 'reportes' %}">Reportes</a>
+    </div>
+
+    <!-- Contenido educativo -->
+    <section class="mt-5">
+      <h3 class="text-center">CONTENIDO EDUCATIVO</h3>
+      <ul class="list-unstyled text-start ms-4 mt-2">
+        <li><a href="#" class="info-link" data-info="bolsa">¿Qué es la bolsa de valores?</a></li>
+        <li><a href="#" class="info-link" data-info="conceptos">Conceptos claves</a></li>
+        <li><a href="#" class="info-link" data-info="invertir">¿Cómo invertir?</a></li>
+        <li><a href="#" class="info-link" data-info="consejos">Consejos prácticos</a></li>
+      </ul>
+      <div id="respuesta-educativo" class="alert alert-info mt-3 text-center d-none"></div>
+    </section>
+
+    <!-- Preguntas frecuentes -->
+    <section class="mt-5">
+      <h3 class="text-center">PREGUNTAS FRECUENTES</h3>
+      <ul class="list-unstyled text-start ms-4 mt-2">
+        <li><a href="#" class="faq-link" data-faq="predicciones">¿Cómo funcionan las predicciones?</a></li>
+        <li><a href="#" class="faq-link" data-faq="planes">¿Qué planes existen?</a></li>
+        <li><a href="#" class="faq-link" data-faq="politicas">Políticas del algoritmo</a></li>
+      </ul>
+      <div id="respuesta-faq" class="alert alert-warning mt-3 text-center d-none"></div>
+    </section>
+
+  </main>
+
+  <script>
+    // ====== Textos dinámicos (Sin cambios) ======
+    const educativoRespuestas = {
+      bolsa: "La bolsa de valores es un mercado donde se compran y venden acciones y otros valores financieros...",
+      conceptos: "Conceptos clave incluyen acción, dividendo, capitalización, rentabilidad y riesgo...",
+      invertir: "Para invertir se necesita definir objetivos, evaluar riesgos, elegir un bróker y diversificar la cartera...",
+      consejos: "Nunca inviertas sin conocer el producto. Diversifica tus inversiones y mantén una visión a largo plazo."
+    };
+
+    const faqRespuestas = {
+      predicciones: `<p>Las predicciones se generan mediante un <b>algoritmo de inteligencia artificial</b>...</p>`,
+      planes: `<p>Existen tres planes diseñados para diferentes necesidades...</p>`,
+      politicas: `<p>El algoritmo utiliza <b>datos públicos y verificados</b>...</p>`
+    };
+
+    document.querySelectorAll(".info-link").forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const tipo = e.target.dataset.info;
+        const div = document.getElementById("respuesta-educativo");
+        if (!div.classList.contains("d-none") && div.dataset.active === tipo) {
+          div.classList.add("d-none");
+          div.removeAttribute("data-active");
+        } else {
+          div.textContent = educativoRespuestas[tipo];
+          div.classList.remove("d-none");
+          div.dataset.active = tipo;
+        }
+      });
+    });
+
+    document.querySelectorAll(".faq-link").forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const tipo = e.target.dataset.faq;
+        const div = document.getElementById("respuesta-faq");
+        if (!div.classList.contains("d-none") && div.dataset.active === tipo) {
+          div.classList.add("d-none");
+          div.removeAttribute("data-active");
+        } else {
+          div.innerHTML = faqRespuestas[tipo];
+          div.classList.remove("d-none");
+          div.dataset.active = tipo;
+        }
+      });
+    });
+
+    // ====== Configuración: modo oscuro/claro (Sin cambios) ======
+    const toggleDarkModeBtn = document.getElementById('toggleDarkMode');
+    let darkMode = localStorage.getItem('darkMode') === 'true';
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+      toggleDarkModeBtn.textContent = 'Modo claro';
+    }
+
+    toggleDarkModeBtn.addEventListener('click', () => {
+      darkMode = !darkMode;
+      document.body.classList.toggle('dark-mode', darkMode);
+      toggleDarkModeBtn.textContent = darkMode ? 'Modo claro' : 'Modo oscuro';
+      localStorage.setItem('darkMode', darkMode);
+    });
+
+    // ====== Tamaño de fuente (Sin cambios) ======
+    let currentSize = 100;
+    document.getElementById('increaseFont').addEventListener('click', () => {
+      currentSize += 10;
+      document.body.style.fontSize = currentSize + '%';
+    });
+    document.getElementById('decreaseFont').addEventListener('click', () => {
+      currentSize -= 10;
+      document.body.style.fontSize = currentSize + '%';
+    });
+
+    // ====== Estilos modo oscuro (Sin cambios) ======
+    const darkModeCSS = `
+      .dark-mode {
+        background-color: #121212 !important;
+        color: #e0e0e0 !important;
+      }
+      .dark-mode .navbar {
+        background-color: #1f1f1f !important;
+      }
+      .dark-mode .dropdown-menu {
+        background-color: #1f1f1f !important;
+        color: #e0e0e0 !important;
+      }
+      .dark-mode .dropdown-item {
+        color: #e0e0e0 !important;
+      }
+      .dark-mode .dropdown-item:hover {
+        background-color: #333 !important;
+      }
+      .dark-mode a {
+        color: #a8d0ff !important;
+      }
+      .dark-mode .badge { /* Estilo para el badge del plan en el modo oscuro */
+          background-color: #5bc0de !important;
+          color: #1f1f1f !important;
+      }
+    `;
+    const style = document.createElement('style');
+    style.appendChild(document.createTextNode(darkModeCSS));
+    document.head.appendChild(style);
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

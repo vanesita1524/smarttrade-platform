@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: #004aad;
+            text-align: center;
+            padding-top: 50px;
+        }
+        h1 {
+            color: #004aad;
+        }
+        a {
+            color: #004aad;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #004aad;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #003080;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bienvenido a tu perfil</h1>
+    <p>Aquí podrás ver y actualizar tu información personal.</p>
+
+    <p><strong>Nombre:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+    <p><strong>Email:</strong> {{ request.user.email }}</p>
+    <p><strong>Plan actual:</strong>
+        {% if perfil.plan %}
+            {{ perfil.plan.nombre }}
+        {% else %}
+            Sin plan
+        {% endif %}
+    </p>
+
+    <!-- Enlace para cambiar de plan -->
+    <a href="{% url 'cambiar_plan' %}" class="btn">Cambiar Plan</a>
+    <a href="{% url 'home' %}" class="btn">Volver al inicio</a>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container text-center mt-5">
+    <h2 class="text-success fw-bold">✅ PQRS enviada con éxito</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success mt-3">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <p class="mt-3">
+        Gracias por comunicarte con nosotros.<br>
+        Pronto te daremos respuesta.  
+        Te llegará al correo electrónico máximo en <strong> 3 días hábiles</strong>.
+    </p>
+    <a href="{% url 'usuarios:home' %}" class="btn btn-primary mt-3">Volver al inicio</a>
+</div>
+{% endblock %}

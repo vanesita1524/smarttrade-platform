@@ -1,0 +1,70 @@
+en powershell -> 1. django-admin startproject nombre_proyecto :  Crea la carpeta principal del proyecto con toda la estructura básica de Django
+                2. cd nombre_proyecto : Te mueves dentro de la carpeta donde está manage.py, porque desde ahí se ejecutan los comandos de Django.
+                3. python manage.py startapp usuarios : Dentro de tu proyecto puedes tener varias apps.
+                    Te crea una carpeta con:
+                    models.py → donde defines las tablas (modelos).
+                    views.py → donde defines la lógica de las páginas.
+                    admin.py, apps.py, etc.
+                4. pip install mysqlclient : necesita un "driver". mysqlclient es la librería que conecta Django con MySQL.
+                    en defecto seria sqlite
+
+
+settings.py normal -> DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mi_base',      # nombre de la base de datos
+        'USER': 'root',         # tu usuario de MySQL
+        'PASSWORD': 'tu_contraseña',
+        'HOST': 'localhost',    # si usas XAMPP o MySQL local
+        'PORT': '3306',         # puerto por defecto de MySQL
+    }
+}
+
+antes del settings se puso .env para variables de entorno dentro de la carpeta de nombre_proyecto
+para usar .env en settings.py (django) debemos instalar: django-environ
+ahora si en settings.py se pone: 
+
+import environ
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': env("DB_NAME"),
+        'USER': env("DB_USER"),
+        'PASSWORD': env("DB_PASSWORD"),
+        'HOST': env("DB_HOST"),
+        'PORT': env("DB_PORT"),
+    }
+}
+
+despues esto en powershell: 
+1. python manage.py makemigrations : Django revisa tus modelos (models.py) y crea archivos de migración (instrucciones de cómo crear tablas).
+2. python manage.py migrate : Django ejecuta esas migraciones en la base de datos real (MySQL).
+    Esto crea las tablas necesarias: usuarios, permisos, sesiones, etc.
+
+
+hacemos views y urls, tener en cuenta que por defecto los html deben estar en templates y los css y js en static al mismo nivel de manage-py
+sino toca en settings cambiar el directorio en templates [ DIRS: nueva ruta] y STATICFILES_DIRS = [
+    BASE_DIR / "static"] (ejemplo ruta), tambien se debe poner: python manege.py runserver y ya se puede observar y abrir
+
+
+para abrir el login es: http://127.0.0.1:8000/usuarios/login/
+
+pip install django
+pip install mysqlclient
+pip install django-environ
+
+revisar lo tiene que ejecutar si le mandaron el proyecto: python manage.py createsuperuser
+
+cuando tenga base de datos
+python manage.py makemigrations
+python manage.py migrate   
+
+correr la pagina: python manage.py runserver  
+y abre en el navegador: http://127.0.0.1:8000/usuarios/login/ para el login
+ya para otro se crea la url (ya pelea con chatgpt de como crear esas cosas, digamos un registro y eso con django)
+en el navegador: http://127.0.0.1:8000/admin/ para confirmar que todo este bien en la base de datos

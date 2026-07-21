@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Restablecer Contraseña</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" 
+    rel="stylesheet" 
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" 
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="bg-light">
+
+    <div class="container">
+        <!-- Logo -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <span class="logo_login">ST</span>
+            </div>
+        </div>
+
+        <!-- Título -->
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <h2>Restablecer Contraseña</h2>
+                <p class="text-muted">Ingrese su correo electrónico para recibir las instrucciones</p>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <form id="resetForm" method="post">
+            {% csrf_token %}
+            <div class="row mt-3">
+                <div class="col-12 col-md-6 mx-auto text-center">
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Correo electrónico" required>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12 col-md-6 mx-auto text-center">
+                    <button type="submit" class="btn btn-primary w-100">Enviar enlace de recuperación</button>
+                </div>
+            </div>
+            {% if mensaje %}
+            <p class="text-success text-center mt-3">{{ mensaje }}</p>
+            {% endif %}
+            {% if error %}
+            <p class="text-danger text-center mt-3">{{ error }}</p>
+            {% endif %}
+        </form>
+
+        <!-- Link volver -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <p><a href="{% url 'login' %}" class="text-decoration-none">Volver al inicio de sesión</a></p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

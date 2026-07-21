@@ -1,0 +1,317 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reportes | SmartTrade</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+        }
+        .card { 
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,.125);
+        }
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,.1);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        .stat { 
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #0d6efd;
+        }
+        .alert {
+            border-radius: 6px;
+        }
+        .table {
+            font-size: 0.95rem;
+        }
+        .table th {
+            font-weight: 600;
+            color: #495057;
+        }
+        .card-title {
+            color: #212529;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .text-muted {
+            color: #6c757d !important;
+            font-size: 0.875rem;
+        }
+        .bi {
+            vertical-align: -0.125em;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <h3>Reportes — Plan: {{ plan }}</h3>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'home' %}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+
+    {% if not dates or not closes %}
+        <div class="alert alert-warning mt-4">No hay datos históricos disponibles para generar reportes. Asegúrate de que el archivo <code>usuarios/static/data/predicciones_finales.csv</code> contenga las columnas necesarias (date, close).</div>
+    {% else %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card p-3">
+                <canvas id="closeChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div>Predicción corto plazo</div>
+                <div class="stat">{{ pred_short }}</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div>Volatilidad (anualizada)</div>
+                <div class="stat">{{ volatility|default:"N/A" }}</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div>Comentario</div>
+                <div class="stat">{{ comentario_simple }}</div>
+            </div>
+        </div>
+    </div>
+
+    {% if resumen_semanal %}
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card p-3">
+                <h5>Resumen semanal</h5>
+                <p>Promedio última semana: {{ resumen_semanal.last7|floatformat:2 }} — Semana anterior: {{ resumen_semanal.prev7|floatformat:2 }}</p>
+                <p>Cambio porcentual: {% if resumen_semanal.delta_pct %}{{ resumen_semanal.delta_pct|floatformat:2 }}%{% else %}N/A{% endif %}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if plan|lower == 'premium' or plan|lower == 'oro' %}
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <div class="card p-3">
+                <canvas id="smaChart" height="100"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-3">
+                <h6>Indicadores</h6>
+                <p>RSI(14): {% if rsi14 %}{{ rsi14|floatformat:2 }}{% else %}N/A{% endif %}</p>
+                <p>MACD hist: {% if macd_hist %}{{ macd_hist|floatformat:4 }}{% else %}N/A{% endif %}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if plan|lower == 'oro' %}
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <div class="card p-3">
+                <h5>Análisis de Escenarios</h5>
+                <div class="alert alert-info">
+                    <p class="mb-1"><strong>Escenario Base</strong></p>
+                    <p>Último precio: {{ closes|last|floatformat:2 }}</p>
+                </div>
+                <div class="alert alert-success">
+                    <p class="mb-1"><strong>Escenario Alcista (Brent +5%)</strong></p>
+                    <p>Precio estimado: {{ escenarios.brent_plus5|floatformat:2 }}</p>
+                    <p class="mb-0 text-muted">Impacto de incremento en precio del petróleo</p>
+                </div>
+                <div class="alert alert-warning">
+                    <p class="mb-1"><strong>Escenario Bajista (Brent -5%)</strong></p>
+                    <p>Precio estimado: {{ escenarios.brent_minus5|floatformat:2 }}</p>
+                    <p class="mb-0 text-muted">Impacto de caída en precio del petróleo</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-3">
+                <h5>Variables Macroeconómicas</h5>
+                <canvas id="macroChart" height="200"></canvas>
+                <div class="mt-3">
+                    <h6>Impacto en el precio:</h6>
+                    <ul class="list-unstyled">
+                    {% for k,v in importancia_variables.items %}
+                        <li><i class="bi bi-arrow-right"></i> {{ k }}: <strong>{{ v|floatformat:2 }}</strong></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card p-3">
+                <h5>Análisis Fundamentales</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Variable</th>
+                                <th>Valor Actual</th>
+                                <th>Tendencia</th>
+                                <th>Impacto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Precio Brent</td>
+                                <td>$82.45</td>
+                                <td><i class="bi bi-arrow-up text-success"></i> Alcista</td>
+                                <td>Alto</td>
+                            </tr>
+                            <tr>
+                                <td>USD/COP</td>
+                                <td>3,950</td>
+                                <td><i class="bi bi-arrow-down text-danger"></i> Bajista</td>
+                                <td>Medio</td>
+                            </tr>
+                            <tr>
+                                <td>EMBI Colombia</td>
+                                <td>250 pbs</td>
+                                <td><i class="bi bi-arrow-right text-warning"></i> Estable</td>
+                                <td>Bajo</td>
+                            </tr>
+                            <tr>
+                                <td>Producción (kbpd)</td>
+                                <td>720</td>
+                                <td><i class="bi bi-arrow-up text-success"></i> Alcista</td>
+                                <td>Medio</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Datos de series temporales
+    const dates = {{ dates|default:'[]'|safe }};
+    const closes = {{ closes|default:'[]'|safe }};
+    const sma7 = {{ sma7|default:'null'|safe }};
+    const sma21 = {{ sma21|default:'null'|safe }};
+    const boll_upper = {{ boll_upper|default:'null'|safe }};
+    const boll_lower = {{ boll_lower|default:'null'|safe }};
+
+    // Close chart
+    const ctx = document.getElementById('closeChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [
+                    { label: 'Cierre', data: closes, borderColor: 'rgba(54,162,235,1)', fill:false },
+                    ...(sma7 ? [{ label: 'SMA7', data: sma7, borderColor: 'rgba(255,99,132,0.8)', borderDash:[5,2], fill:false }] : []),
+                    ...(sma21 ? [{ label: 'SMA21', data: sma21, borderColor: 'rgba(75,192,192,0.8)', borderDash:[5,2], fill:false }] : []),
+                    ...(boll_upper ? [{ label: 'Boll Upper', data: boll_upper, borderColor: 'rgba(153,102,255,0.4)', fill:false }] : []),
+                    ...(boll_lower ? [{ label: 'Boll Lower', data: boll_lower, borderColor: 'rgba(153,102,255,0.4)', fill:false }] : []),
+                ]
+            },
+            options: { 
+                responsive: true,
+                interaction: {mode:'index'},
+                plugins: {
+                    legend: {display:true},
+                    title: {
+                        display: true,
+                        text: 'Precio Histórico y Medias Móviles'
+                    }
+                }
+            }
+        });
+    }
+
+    // SMA chart for premium
+    const smaCtx = document.getElementById('smaChart');
+    if (smaCtx && (sma7 || sma21)) {
+        new Chart(smaCtx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [
+                    { label:'Cierre', data: closes, borderColor:'rgba(54,162,235,0.8)', fill:false },
+                    ...(sma7 ? [{ label: 'SMA7', data: sma7, borderColor: 'rgba(255,99,132,0.8)', fill:false }] : []),
+                    ...(sma21 ? [{ label: 'SMA21', data: sma21, borderColor: 'rgba(75,192,192,0.8)', fill:false }] : []),
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Análisis Técnico'
+                    }
+                }
+            }
+        });
+    }
+
+    // Macro variables chart (Gold plan)
+    const macroCtx = document.getElementById('macroChart');
+    if (macroCtx) {
+        const importancia = {{ importancia_variables|default:'{}'|safe }};
+        new Chart(macroCtx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(importancia),
+                datasets: [{
+                    data: Object.values(importancia),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)'
+                    ],
+                    borderColor: 'white',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Impacto de Variables Macroeconómicas'
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>

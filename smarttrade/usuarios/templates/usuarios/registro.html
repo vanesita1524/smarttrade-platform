@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>REGISTRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" 
+    rel="stylesheet" 
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" 
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+<body class="bg-light">
+        <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-md bg-white shadow-sm">
+        <div class="container-fluid px-4">
+        <!-- Logo -->
+        <a class="navbar-brand fw-bold" href="#">ST</a>
+
+        <!-- Botón hamburguesa móvil -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Contenido colapsable -->
+        <div class="collapse navbar-collapse justify-content-between" id="navbarContent">
+            <!-- Buscador escritorio -->
+            <form class="d-none d-md-flex w-50 mx-auto">
+            <input type="text" class="form-control" placeholder="Buscar...">
+            </form>
+
+            <!-- Iconos -->
+            <ul class="navbar-nav ms-auto flex-row gap-3 align-items-center">
+            <li class="nav-item"><a class="nav-link" href="{% url 'pqrs' %}">PQRS</a></li>
+            <li class="nav-item d-md-none">
+                <i id="btnLupa" class="bi bi-search" style="cursor:pointer; font-size:1.5rem;"></i>
+            </li>
+            <li class="nav-item">
+                <i class="bi bi-gear" style="font-size:1.4rem; cursor:pointer;"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#"><i class="bi bi-person-circle" style="font-size:1.4rem; cursor:pointer;"></i></a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'logout' %}">
+                <i class="bi bi-x-lg text-dark" style="font-size:1.4rem; cursor:pointer;"></i>
+                </a>
+            </li>
+            </ul>
+        </div>
+        </div>
+    </nav>
+
+    <!-- Buscador móvil -->
+    <div class="container-fluid d-md-none mt-2 px-4">
+        <input type="text" class="form-control" placeholder="Buscar...">
+    </div>
+
+    <div class="container-fluid">
+        {% if form.errors %}
+        <div style="color: red;">
+            {{ form.errors }}
+        </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-12 col-12 text-center mx-auto mt-3">
+                <h3>Registrate</h3>
+            </div>
+        </div>
+        <form method="POST">
+            <div class="row">
+                <div class="col-12 col-md-12 mx-auto text-center mt-3">
+                    {% csrf_token %}
+                    <label>{{ form.first_name.label }}</label>
+                    {{ form.first_name }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-12 mx-auto text-center mt-2">
+                    {% csrf_token %}
+                    <label>{{ form.last_name.label }}</label>
+                    {{ form.last_name }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-12 mx-auto text-center mt-2">
+                    {% csrf_token %}
+                    <label>{{ form.username.label }}</label>
+                    {{ form.username }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-12 mx-auto text-center mt-2">
+                    {% csrf_token %}
+                    <label>{{ form.phone.label }}</label>
+                    {{ form.phone }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-12 mx-auto text-center mt-2">
+                    <label>{{ form.email.label }}</label>
+                    {{ form.email }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-12 mx-auto text-center mt-2">
+                    <label>{{ form.password.label }}</label>
+                    {{ form.password }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-12 mx-auto text-center mt-2">
+                    <label>{{ form.plan.label }}</label>
+                    {{ form.plan }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-12 mx-auto text-center mt-3">
+                    <button type="submit">Registrarse</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+<script src="{% static 'js/script.js' %}"></script>

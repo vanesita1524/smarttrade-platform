@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Cambiar Plan{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow p-4">
+        <h3 class="text-center mb-4">Cambiar de Plan</h3>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="plan" class="form-label">Selecciona un nuevo plan:</label>
+                <select class="form-select" name="plan" id="plan" required>
+                    {% for plan in planes %}
+                        <option value="{{ plan.id }}" {% if perfil.plan and plan.id == perfil.plan.id %}selected{% endif %}>
+                            {{ plan.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Actualizar Plan</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <a href="{% url 'home' %}" class="text-secondary">Volver al inicio</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

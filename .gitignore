@@ -1,0 +1,10 @@
+.env
+venv
+pycache__/
+**/venv/
+**/.env
+**/__pycache__/
+*.py[cod]
+staticfiles/
+**/staticfiles/
+notas.txt

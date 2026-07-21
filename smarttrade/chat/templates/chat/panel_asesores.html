@@ -1,0 +1,94 @@
+{% block content %}
+<h2>Panel de asesores</h2>
+
+<div style="display:flex; gap:20px;">
+    <!-- Lista de usuarios Oro -->
+    <div style="width:200px; border:1px solid #ccc; padding:10px;">
+        <h4>Usuarios Oro</h4>
+        <ul>
+        {% for user in usuarios_oro %}
+            <li data-userid="{{ user.id }}">
+                <a href="#" onclick="abrirChat(this.parentElement.dataset.userid)">{{ user.username }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Sala de chat -->
+    <div style="flex:1; border:1px solid #ccc; padding:10px;">
+        <h4 id="chat-title">{% if chat_user %}Chat con usuario {{ chat_user.username }}{% else %}Seleccione un usuario{% endif %}</h4>
+        <div id="chat-log" style="height:300px; overflow-y:scroll; border:1px solid #999; padding:10px;">
+        {% for msg in historial %}
+            <b>{{ msg.username }}:</b> {{ msg.mensaje }} <span style="color:gray;font-size:0.8em;">{{ msg.fecha }}</span><br>
+        {% endfor %}
+        </div>
+        <input id="chat-message-input" type="text" size="80">
+        <button id="chat-message-submit">Enviar</button>
+    </div>
+
+    <!-- Guardar ID del asesor -->
+    <div id="chat-container" data-asesor="{{ request.user.id }}"></div>
+</div>
+
+<script>
+let chatSocket = null;
+
+function abrirChat(userId) {
+    userId = parseInt(userId);
+    const asesorId = parseInt(document.getElementById('chat-container').dataset.asesor);
+
+    if (isNaN(userId) || isNaN(asesorId)) {
+        console.error("IDs inválidos:", userId, asesorId);
+        return;
+    }
+
+    if(chatSocket) chatSocket.close();
+
+    // Generar room_name en el mismo formato que usa la vista del usuario
+    const roomName = `user_${userId}_asesor_${asesorId}`;
+
+    document.getElementById('chat-title').innerText = "Chat con usuario " + userId;
+    const chatLog = document.getElementById('chat-log');
+    chatLog.innerHTML = "Cargando historial...";
+
+    // Primero solicitar historial vía AJAX
+    fetch(`/chat/historial/?usuario_id=${userId}`)
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.error) {
+                chatLog.innerHTML = `<div class="text-danger">Error: ${data.error}</div>`;
+                return;
+            }
+            chatLog.innerHTML = '';
+            data.historial.forEach(m => {
+                chatLog.innerHTML += `<b>${m.username}:</b> ${m.mensaje} <span style="color:gray;font-size:0.8em;">${m.fecha}</span><br>`;
+            });
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            // Abrir websocket una vez cargado el historial
+            if(chatSocket) chatSocket.close();
+            chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/');
+
+            chatSocket.onopen = () => console.log('WebSocket conectado: ' + roomName);
+            chatSocket.onmessage = (e) => {
+                const ev = JSON.parse(e.data);
+                chatLog.innerHTML += `<b>${ev.username}:</b> ${ev.message}<br>`;
+                chatLog.scrollTop = chatLog.scrollHeight;
+            };
+            chatSocket.onclose = () => console.log('WebSocket cerrado');
+
+            // Enviar mensajes por websocket
+            document.getElementById('chat-message-submit').onclick = () => {
+                const input = document.getElementById('chat-message-input');
+                if(input.value.trim() === "") return;
+                chatSocket.send(JSON.stringify({'message': input.value}));
+                input.value = '';
+            };
+        })
+        .catch(err => {
+            chatLog.innerHTML = `<div class="text-danger">No se pudo cargar el historial</div>`;
+            console.error(err);
+        });
+}
+</script>
+{% endblock %}

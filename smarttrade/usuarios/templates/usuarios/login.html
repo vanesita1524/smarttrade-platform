@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio Sesión</title>
+    <!-- Adapta pantalla al ancho del dispositivo -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" 
+    rel="stylesheet" 
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" 
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="bg-light">
+    <div class="container">
+        
+        <!-- Logo -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <span class="logo_login">ST</span>
+            </div>
+        </div>
+
+        <!-- Título -->
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <h2>Iniciar Sesión</h2>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <form id="loginForm" method="post">
+            {% csrf_token %}
+                <div class="row mt-3">
+                    <div class="col-12 col-md-6 mx-auto text-center">
+                        <input type="text" id="usuario" class="form-control" name="usuario" placeholder="Ingrese usuario" required>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12 col-md-6 mx-auto text-center">
+                        <input type="password" id="contraseña" name="contraseña" class="form-control" placeholder="Ingrese contraseña" required>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12 col-md-6 mx-auto text-center">
+                        <button type="submit" id="login_buttom" class="btn btn-primary w-100">Ingresar</button>
+                    </div>
+                </div>
+            {% if error %}
+            <p style="color:red;">{{ error }}</p>
+            {% endif %}
+        </form>
+        <!-- Links -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <p id="registro"><a href="{% url 'planes' %}">Regístrese</a></p>
+                <a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

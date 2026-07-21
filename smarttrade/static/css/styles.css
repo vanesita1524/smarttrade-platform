@@ -1,0 +1,110 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+/*login*/
+.logo_login{
+    background: black;
+    color: white;
+    border-radius: 50%;
+    padding: 5%;
+    font-size: 300%;
+    font-weight: bold;
+}
+
+h2{
+    padding-top: 5%;
+}
+#usuario, #contraseña, #login_buttom{
+    box-shadow: opx 2px 8px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+#registro:hover{
+    color: darkblue;
+    cursor: pointer;
+}
+
+#contraseña_recuperar:hover{
+    color:darkblue;
+    cursor: pointer;
+}
+/* Al inicio solo se ve la app */
+#pantalla-chat {
+  display: none;
+}
+
+/* Encabezado */
+.top-bar .logo {
+  background: #000000;
+  color: white;
+  border-radius: 50%;
+  padding: 10px 14px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* Buscador oculto en celular por defecto */
+#searchBoxMobile {
+  display: none;
+}
+
+.top-bar input {   /*buscador diseño*/
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding-right: 60%;
+}
+
+/* Secciones */
+#imagen_bolsa {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+#btn-contacto:hover{
+  color: #000000;
+  cursor: pointer;
+}
+li{
+  margin-left: 20%;
+}
+/* Chat */
+.chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chat h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.message-box {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  background: #f0f8ff;
+  font-size: 14px;
+  margin-left: 20%;
+  margin-bottom: 30%;
+  max-width: 250px;
+}
+
+.chat-input {
+  display: flex;
+  gap: 5px;
+}
+.chat-input input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+}
+.chat-input button {
+  border: none;
+  background: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
