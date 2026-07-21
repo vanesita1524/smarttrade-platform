@@ -316,3 +316,37 @@ python manage.py runserver
 - Portfolio management.
 - Real-time notifications.
 - Improved predictive models.
+
+---
+
+#User dashborad
+<img width="780" height="569" alt="image" src="https://github.com/user-attachments/assets/8fec0b66-e2a1-4957-8381-dca7de30fc66" />
+<img width="919" height="497" alt="image" src="https://github.com/user-attachments/assets/aba01868-53a6-40d3-901b-7ac4a262a544" />
+<img width="324" height="393" alt="image" src="https://github.com/user-attachments/assets/3d0b4840-7988-4783-b372-1d4b1a4f2a84" />
+
+---
+#home page
+<img width="1362" height="617" alt="image" src="https://github.com/user-attachments/assets/84ae65ce-bbc5-4b45-837a-38fdeb8e359b" />
+<img width="1343" height="632" alt="image" src="https://github.com/user-attachments/assets/8697f385-b9fc-47ca-8229-a621393519b7" />
+---
+#plans
+<img width="1092" height="623" alt="image" src="https://github.com/user-attachments/assets/969f2efc-8cbe-4938-a556-65176b116fe5" />
+---
+#PQRS
+<img width="1036" height="626" alt="image" src="https://github.com/user-attachments/assets/07b7ecb8-dfef-4c90-bf45-a5bc1dc78146" />
+<img width="639" height="387" alt="image" src="https://github.com/user-attachments/assets/44576e18-a91b-41d2-ac0a-3786a8c51491" />
+---
+#Reports
+<img width="918" height="560" alt="image" src="https://github.com/user-attachments/assets/8b76dc91-ab80-4d7e-94a0-14d6d3c651a5" />
+<img width="910" height="607" alt="image" src="https://github.com/user-attachments/assets/3795e430-4987-4804-96af-41648e9286cf" />
+
+---
+#chat
+<img width="1365" height="483" alt="image" src="https://github.com/user-attachments/assets/0650e194-82f3-48e3-a3bb-5a0ec67abe9d" />
+<img width="1362" height="362" alt="image" src="https://github.com/user-attachments/assets/8b626994-ab80-47e7-be0a-e70380ab327a" />
+
+
+
+
+
+
